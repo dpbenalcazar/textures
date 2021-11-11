@@ -1,66 +1,47 @@
 import os
 import cv2
+import json
+import argparse
 import numpy as np
 from tqdm import tqdm
 from utils.utils import get_mask
 from utils.image_folder import make_dataset
 
-texture_dir = 'D:/Datasets/TextureDataset/6_Textures/'
-input_dir = 'C:/Users/danki/Desktop/chl2_texture/validation/digital/'
-output_dir = 'C:/Users/danki/Desktop/chl2_texture/validation/'
+class translate_texture(object):
+    def __init__(self, random_crop=False, random_flip=True):
+        self.texture_dir = json.load(open('./cfg.json'))["path_to_textures"]
+        self.sources = ['printed', 'screen']
+        self.random_crop = random_crop
+        self.random_flip = random_flip
+        self.set_source()
 
-sources = ['printed', 'screen']
+    def set_source(self, source='printed'):
+        if source == 'printed':
+            Textures_pA = make_dataset(self.texture_dir + 'printedA/')
+            Textures_pB = make_dataset(self.texture_dir + 'printedB/')
+            self.Textures = Textures_pA + Textures_pB
+            self.source = 'printed'
+        else:
+            self.Textures = make_dataset(self.texture_dir + 'screen/')
+            self.source = 'screen'
+        self.Nt = len(self.Textures)
+        return
 
-random_crop = False
-random_flip = True
-exten = '.jpg'
+    def set_augmentation(self, random_crop=False, random_flip=True):
+        self.random_crop = random_crop
+        self.random_flip = random_flip
+        return
 
-for s in [0, 1]:
-
-    # Output Folder
-    output_dir2 = output_dir + sources[s] + '/'
-
-    if not os.path.exists(output_dir2):
-        os.makedirs(output_dir2)
-
-    # Define texture image names
-    if s == 0:
-        Textures_pA = make_dataset(texture_dir + 'printedA/');
-        Textures_pB = make_dataset(texture_dir + 'printedB/');
-        Textures = Textures_pA + Textures_pB
-    else:
-        Textures = make_dataset(texture_dir + 'screen/');
-
-    Nt = len(Textures);
-
-    # Find image names
-    Files = make_dataset(input_dir)
-    Nf = len(Files);
-
-    # Loop control variables
-    ind_text = np.random.randint(low=0, high=Nt-1, size=Nf)
-
-    # Main loop
-    for f in tqdm(range(Nf), desc='Texturing {}'.format(sources[s])):
-        # Get texture index and image ID
-        n = ind_text[f]
-        ID = Files[f].split('/')[-1]
-        ID = ID[:-4]
-
-        # File names
-        file1 = Textures[n]
-        file2 = Files[f]
-        file3 = output_dir2 + ID + exten
-
+    def texture_image(self, image, n=None):
         # Read texture
-        texture = cv2.imread(file1)
+        if n is None: n = np.random.randint(self.Nt)
+        texture = cv2.imread(self.Textures[n])
+
+        # Get imagege shapes
         H1, W1, _  = texture.shape
+        H2, W2, _  = image.shape
 
-        # Read image
-        im2 = cv2.imread(file2);
-        H2, W2, _  = im2.shape
-
-        if random_crop:
+        if self.random_crop:
             # Random Crop
             x = np.random.randint(low=0, high=int((W1/3)))
             y = np.random.randint(low=0, high=int((H1/3)))
@@ -93,20 +74,86 @@ for s in [0, 1]:
         texture = cv2.resize(texture, (W2,H2), interpolation=cv2.INTER_NEAREST)
 
         # Random flip
-        if random_flip:
+        if self.random_flip:
             if np.random.rand() < 0.5:
                 texture = cv2.flip(texture , 0)
             if np.random.rand() < 0.5:
                 texture = cv2.flip(texture , 1)
 
         # Translate texture
-        im3 = im2.astype(np.int32) + texture.astype(np.int32) - 128
+        im_out = image.astype(np.int32) + texture.astype(np.int32) - 128
 
         # Find segmentation mask
-        mask = get_mask(im2)
+        mask = get_mask(image)
 
         # Remove mask
-        im3[mask>0] = 0
+        im_out[mask>0] = 0
 
-        # Save image
-        cv2.imwrite(file3, im3)
+        return im_out
+
+    def texture_folder(self, input_dir, output_dir, exten='.jpg'):
+
+        # Output Folder
+        output_dir2 = output_dir + self.source + '/'
+        if not os.path.exists(output_dir2):
+            os.makedirs(output_dir2)
+
+        # Find image names
+        Files = make_dataset(input_dir)
+        Nf = len(Files)
+
+        # Loop control variables
+        ind_text = np.random.randint(low=0, high=self.Nt-1, size=Nf)
+
+        # Main loop
+        for f in tqdm(range(Nf), desc='  Texturing {}'.format(self.source)):
+            # Get texture index and image ID
+            n = ind_text[f]
+            ID = Files[f].split('/')[-1]
+            ID = ID[:-4]
+
+            # File names
+            file_in = Files[f]
+            file_out = output_dir2 + ID + exten
+
+            # Read image
+            image = cv2.imread(file_in)
+
+            # Texture image
+            im_out = self.texture_image(image, n=n)
+
+            # Save image
+            cv2.imwrite(file_out, im_out)
+
+        # Acknowledge loop finish
+        print('  Texture {} completed!\n'.format(self.source))
+        return
+
+if __name__ == '__main__':
+    # Get user argumets
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input_dir',  default='C:/Users/danki/Desktop/chl2_texture/validation/digital/',
+                             help='Input path (directly to images)')
+    parser.add_argument('-o', '--output_dir', default='C:/Users/danki/Desktop/chl2_texture/validation/',
+                             help='Output folder where the [digital, printed, screen] classes will be placed')
+    parser.add_argument('--random_crop', action='store_true',
+                             help="Performs texture random crop with the same aspect ratio as the input")
+    parser.add_argument('--random_flip', action='store_true',
+                             help="Performs texture random flip (horizontal and vertical)")
+    parser.add_argument('--extension', default='.jpg',
+                             help='Output image extension/format')
+    args = parser.parse_args()
+
+
+    # Create texture translation object
+    TT = translate_texture(random_crop=args.random_crop, random_flip=args.random_flip)
+
+    # Translate to printed
+    TT.set_source('printed')
+    TT.texture_folder(input_dir=args.input_dir, output_dir=args.output_dir, exten=args.extension)
+
+    # Translate to screen
+    TT.set_source('screen')
+    TT.texture_folder(input_dir=args.input_dir, output_dir=args.output_dir, exten=args.extension)
+
+    print('Done!\n')
