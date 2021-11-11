@@ -18,10 +18,10 @@ exten = '.jpg'
 for s in [0, 1]:
 
     # Output Folder
-    car3a = output_dir + sources[s] + '/'
+    output_dir2 = output_dir + sources[s] + '/'
 
-    if not os.path.exists(car3a):
-        os.makedirs(car3a)
+    if not os.path.exists(output_dir2):
+        os.makedirs(output_dir2)
 
     # Define texture image names
     if s == 0:
@@ -42,22 +42,22 @@ for s in [0, 1]:
 
     # Main loop
     for f in tqdm(range(Nf), desc='Texturing {}'.format(sources[s])):
-
+        # Get texture index and image ID
         n = ind_text[f]
         ID = Files[f].split('/')[-1]
         ID = ID[:-4]
 
         # File names
-        arch1 = Textures[n]
-        arch2 = Files[f]
-        arch3 = car3a + ID + exten
+        file1 = Textures[n]
+        file2 = Files[f]
+        file3 = output_dir2 + ID + exten
 
         # Read texture
-        texture = cv2.imread(arch1)
+        texture = cv2.imread(file1)
         H1, W1, _  = texture.shape
 
         # Read image
-        im2 = cv2.imread(arch2);
+        im2 = cv2.imread(file2);
         H2, W2, _  = im2.shape
 
         if random_crop:
@@ -101,7 +101,6 @@ for s in [0, 1]:
 
         # Translate texture
         im3 = im2.astype(np.int32) + texture.astype(np.int32) - 128
-        #im3 = im3.astype(np.uint8)
 
         # Find segmentation mask
         mask = get_mask(im2)
@@ -110,4 +109,4 @@ for s in [0, 1]:
         im3[mask>0] = 0
 
         # Save image
-        cv2.imwrite(arch3, im3)
+        cv2.imwrite(file3, im3)
