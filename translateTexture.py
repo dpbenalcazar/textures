@@ -88,6 +88,7 @@ class translate_texture(object):
 
         # Remove mask
         im_out[mask>0] = 0
+        np.clip(im_out, 0, 255, out=im_out)
 
         return im_out
 
