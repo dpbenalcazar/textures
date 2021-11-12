@@ -127,7 +127,7 @@ class translate_texture(object):
             cv2.imwrite(file_out, im_out)
 
         # Acknowledge loop finish
-        print('  Texture {} completed!\n'.format(self.source))
+        #print('  Texture {} completed!\n'.format(self.source))
         return
 
 if __name__ == '__main__':
