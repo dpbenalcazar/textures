@@ -63,7 +63,7 @@ class translate_texture(object):
                 x = np.random.randint(low=0, high=W1-W3)
                 rect = [x, 0, W3-1, H1-1];
             else:
-                print('Problem on {:d}'.format(f))
+                #print('Problem on {:d}'.format(f))
                 rect = [0, 0, W1-1, H1-1]
 
         # Crop texture image

@@ -15,7 +15,7 @@ dataset_dir = args.input_dir
 # must have train/digital/ , test/digital and validation/digital
 
 for sets in ['test', 'train', 'validation']:
-    print('Processing {} ...'.format(sets))
+    print('\nProcessing {} ...'.format(sets))
     for souece in ['printed', 'screen']:
         # Configure TT
         TT.set_source(souece)
@@ -26,5 +26,3 @@ for sets in ['test', 'train', 'validation']:
 
         # Translate folder
         TT.texture_folder(input_dir, output_dir, exten=args.extension)
-
-    print('\n')
