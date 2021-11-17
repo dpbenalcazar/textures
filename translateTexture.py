@@ -8,9 +8,10 @@ from utils.utils import get_mask
 from utils.image_folder import make_dataset
 
 class translate_texture(object):
-    def __init__(self, random_crop=False, random_flip=True):
+    def __init__(self, black_border=False, random_crop=False, random_flip=True):
         self.texture_dir = json.load(open('./cfg.json'))["path_to_textures"]
         self.sources = ['printed', 'screen']
+        self.black_border = black_border
         self.random_crop = random_crop
         self.random_flip = random_flip
         self.set_source()
@@ -83,11 +84,18 @@ class translate_texture(object):
         # Translate texture
         im_out = image.astype(np.int32) + texture.astype(np.int32) - 128
 
-        # Find segmentation mask
-        mask = get_mask(image)
+        # Check for saturation
+        if im_out.max() > 255:
+            im_out = 250*(im_out-5)/im_out.max() + 5
 
-        # Remove mask
-        im_out[mask>0] = 0
+
+        if self.black_border:
+            # Find segmentation mask
+            mask = get_mask(image)
+            # Remove mask
+            im_out[mask>0] = 0
+
+        # Clip image
         np.clip(im_out, 0, 255, out=im_out)
 
         return im_out
@@ -95,6 +103,8 @@ class translate_texture(object):
     def texture_folder(self, input_dir, output_dir, exten='.jpg'):
 
         # Output Folder
+        if output_dir[-1] != '/':
+            output_dir = output_dir + '/'
         output_dir2 = output_dir + self.source + '/'
         if not os.path.exists(output_dir2):
             os.makedirs(output_dir2)
@@ -137,17 +147,19 @@ if __name__ == '__main__':
                              help='Input path (directly to images)')
     parser.add_argument('-o', '--output_dir', default='C:/Users/danki/Desktop/chl2_texture/validation/',
                              help='Output folder where the [digital, printed, screen] classes will be placed')
-    parser.add_argument('--random_crop', action='store_true',
+    parser.add_argument('-b', '--black_border', action='store_true',
+                             help="Wheather the image has a segmentation black border not to be textured")
+    parser.add_argument('-c', '--random_crop', action='store_true',
                              help="Performs texture random crop with the same aspect ratio as the input")
-    parser.add_argument('--random_flip', action='store_true',
+    parser.add_argument('-f', '--random_flip', action='store_true',
                              help="Performs texture random flip (horizontal and vertical)")
-    parser.add_argument('--extension', default='.jpg',
+    parser.add_argument('-e', '--extension', default='.jpg',
                              help='Output image extension/format')
     args = parser.parse_args()
 
 
     # Create texture translation object
-    TT = translate_texture(random_crop=args.random_crop, random_flip=args.random_flip)
+    TT = translate_texture(black_border=args.black_border, random_crop=args.random_crop, random_flip=args.random_flip)
 
     # Translate to printed
     TT.set_source('printed')

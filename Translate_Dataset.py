@@ -9,7 +9,7 @@ parser.add_argument('--extension', default='.jpg',
 args = parser.parse_args()
 
 
-TT = translate_texture(random_crop=False, random_flip=True)
+TT = translate_texture(black_border=True, random_crop=False, random_flip=True)
 
 dataset_dir = args.input_dir
 # must have train/digital/ , test/digital and validation/digital

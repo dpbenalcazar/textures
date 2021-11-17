@@ -7,7 +7,7 @@ Ten-thousand textures were captured in total, with great variability. Therefore,
 
 This repository contains functions that transfer those manually-captured textures to any new image, using basic image processing techniques. The resulting image will thus possess the appearance of a printed or screen captured version of itself.
 
-Finally, if the image was segmented with black borders around it, those borders are not textured so they remain solid black.
+Finally, if the image was segmented with black borders around it, there is a flag to respect those borders so they remain solid black.
 
 #### Examples
 Let's apply different textures to Lena
