@@ -17,11 +17,13 @@ Textures can be better appreciated while zoomed in
 ![alt text](./assets/zoomed_images.png?raw=true)
 
 #### Requirements and Configuration
-1) This requires an environment with python>3.5, opencv>4.0, numpy, tqdm, json, matplotlib and jupyter notebook
+1) This requires an environment with python>3.5, opencv>4.0, numpy, tqdm, json, matplotlib and jupyter notebook.
 
-2) Download the textures from [google drive](https://drive.google.com/file/d/1wLyl2vb3RLFWliGA2LwngwZeHmRex3SB/view?usp=sharing) and unzip them in a known location
+2) Download the textures from [this link](https://www.dropbox.com/s/t9ha0hgx0rsficc/textures-ID-Card.zip?dl=0) and unzip them in a known location. You must request the password to the authors:
+  - Daniel Benalcazar: dbenalcazar@ug.uchile.cl
+  - Juan Tapia: juan.tapia-farias@h-da.de
 
-3) Copy cfg_example.json under the name cfg.json, and change the field "path_to_textures" so that it points to the location where you saved the downloaded textures
+3) Copy cfg_example.json under the name cfg.json, and change the field "path_to_textures" so that it points to the location where you saved the downloaded textures.
 
 4) Enjoy!
 
@@ -36,3 +38,6 @@ If you want to translate an entire dataset with train, test and validation parti
 1) Use threading for parallel processing
 2) More data augmentations over the textures
 3) Increase the amount of manually captured textures
+
+### Cite Us
+(comming soon)
