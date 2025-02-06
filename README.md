@@ -10,13 +10,14 @@ This repository contains functions that transfer those manually-captured texture
 Finally, if the image was segmented with black borders around it, there is a flag to respect those borders so they remain solid black.
 
 #### Examples
-Let's apply different textures to Lena (Image removed for IEEE restriction)
-https://ieeexplore.ieee.org/document/8100841
-%%![alt text](./assets/full_images.png?raw=true)
+Let's apply different textures to Lena:
+- Images removed for IEEE restriction)
+- https://ieeexplore.ieee.org/document/8100841
 
-Textures can be better appreciated while zoomed in
-%%![alt text](./assets/zoomed_images.png?raw=true)
-https://ieeexplore.ieee.org/document/8100841
+
+Textures can be better appreciated while zoomed in:
+
+- https://ieeexplore.ieee.org/document/8100841
 
 #### Requirements and Configuration
 1) This requires an environment with python>3.5, opencv>4.0, numpy, tqdm, json, matplotlib and jupyter notebook.
