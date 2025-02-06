@@ -1,20 +1,22 @@
 # textures
 Translate a digital image into a printed version or a screen capture.
 
-It is based on manually captured images of solid colors under different conditions of printer setups, illumination, paper qualities, capturing devices, and projected screens. The original images were processed to isolate the underlaying color with texture. After that the mean color was subtracted from the image, leaving only the texture underneath.
+It is based on manually captured images of solid colors under different conditions of printer setups, illumination, paper qualities, capturing devices, and projected screens. The original images were processed to isolate the underlying colour with texture. After that, the mean colour was subtracted from the image, leaving only the texture underneath.
 
 Ten-thousand textures were captured in total, with great variability. Therefore, there are smooth textures from high quality glossy paper and HD displays, but also there are rough textures with lots of details regarding inks, paper surfaces and pixel aliasing.
 
-This repository contains functions that transfer those manually-captured textures to any new image, using basic image processing techniques. The resulting image will thus possess the appearance of a printed or screen captured version of itself.
+This repository contains functions that transfer those manually-captured textures to any new image, using basic image processing techniques. The resulting image will thus possess the appearance of a printed or screen-captured version of itself.
 
 Finally, if the image was segmented with black borders around it, there is a flag to respect those borders so they remain solid black.
 
 #### Examples
-Let's apply different textures to Lena
-![alt text](./assets/full_images.png?raw=true)
+Let's apply different textures to Lena (Image removed for IEEE restriction)
+https://ieeexplore.ieee.org/document/8100841
+%%![alt text](./assets/full_images.png?raw=true)
 
 Textures can be better appreciated while zoomed in
-![alt text](./assets/zoomed_images.png?raw=true)
+%%![alt text](./assets/zoomed_images.png?raw=true)
+https://ieeexplore.ieee.org/document/8100841
 
 #### Requirements and Configuration
 1) This requires an environment with python>3.5, opencv>4.0, numpy, tqdm, json, matplotlib and jupyter notebook.
